@@ -149,7 +149,16 @@ $breakpoint-has-pull:   ('palm', 'lap', 'portable', 'desk') !default;
  */
 $class-type: if($use-silent-classes, unquote("%"), unquote("."));
 
+/* Force clearfix on grids */
+.grid,
+.grid-uniform {
+  @include clearfix;
+}
 
+/* Manual grid__item clearfix */
+.grid__item.clear {
+  clear: both;
+}
 
 
 
@@ -194,6 +203,22 @@ $class-type: if($use-silent-classes, unquote("%"), unquote("."));
     }
 }
 
+.clearfix {
+  &:after {
+    content: "";
+    display: table;
+    clear: both; }
+  *zoom: 1;
+}
+
+@mixin clearfix() {
+  &:after {
+    content: "";
+    display: table;
+    clear: both; }
+  *zoom: 1;
+}
+
 
 
 
@@ -206,24 +231,13 @@ $class-type: if($use-silent-classes, unquote("%"), unquote("."));
  * 2. Remove any margins and paddings that might affect the grid system.
  * 3. Apply a negative `margin-left` to negate the columns’ gutters.
  */
-#{$class-type}grid {
+#{$class-type}grid,
+#{$class-type}grid-uniform {
     list-style:none;                /* [1] */
     margin:0;                       /* [2] */
     padding:0;                      /* [2] */
     margin-left:-$gutter;           /* [3] */
-    @if not $use-markup-fix {
-        letter-spacing:-0.31em;
-    }
 }
-
-@if not $use-markup-fix {
-    /* Opera hack */
-    .opera:-o-prefocus,
-    #{$class-type}grid {
-        word-spacing:-0.43em;
-    }
-}
-
 
     /**
      * 1. Cause columns to stack side-by-side.
@@ -233,15 +247,15 @@ $class-type: if($use-silent-classes, unquote("%"), unquote("."));
      * 5. Required to combine fluid widths and fixed gutters.
      */
     #{$class-type}grid__item {
-        display:inline-block;           /* [1] */
+        float: left;
+        min-height: 1px;
+        vertical-align:top;
         padding-left:$gutter;           /* [2] */
         vertical-align:top;             /* [3] */
         @if $mobile-first {
             width:100%;                 /* [4] */
         }
-        -webkit-box-sizing:border-box;  /* [5] */
-           -moz-box-sizing:border-box;  /* [5] */
-                box-sizing:border-box;  /* [5] */
+        box-sizing:border-box;  /* [5] */
         @if not $use-markup-fix {
             letter-spacing:normal;
             word-spacing:normal;
@@ -260,6 +274,7 @@ $class-type: if($use-silent-classes, unquote("%"), unquote("."));
     > #{$class-type}grid__item {
         direction:ltr;
         text-align:left;
+        float:right;
     }
 }
 
@@ -703,4 +718,26 @@ $class-type: if($use-silent-classes, unquote("%"), unquote("."));
         }
     }
 
+}
+
+
+/*================ Clearfix helper on uniform grids ================*/
+@mixin clearfix-helper($namespace:"") {
+  .grid-uniform {
+    #{$class-type}#{$namespace}one-half:nth-child(2n+1),
+    #{$class-type}#{$namespace}one-third:nth-child(3n+1),
+    #{$class-type}#{$namespace}one-quarter:nth-child(4n+1),
+    #{$class-type}#{$namespace}one-fifth:nth-child(5n+1),
+    #{$class-type}#{$namespace}one-sixth:nth-child(6n+1),
+    #{$class-type}#{$namespace}two-sixths:nth-child(3n+1),
+    #{$class-type}#{$namespace}three-sixths:nth-child(2n+1),
+    #{$class-type}#{$namespace}two-eighths:nth-child(4n+1),
+    #{$class-type}#{$namespace}four-eighths:nth-child(2n+1),
+    #{$class-type}#{$namespace}five-tenths:nth-child(2n+1),
+    #{$class-type}#{$namespace}one-twelfth:nth-child(12n+1),
+    #{$class-type}#{$namespace}two-twelfths:nth-child(6n+1),
+    #{$class-type}#{$namespace}three-twelfths:nth-child(4n+1),
+    #{$class-type}#{$namespace}four-twelfths:nth-child(3n+1),
+    #{$class-type}#{$namespace}six-twelfths:nth-child(2n+1)    { clear:both; }
+  }
 }
